@@ -154,7 +154,7 @@ const VisitorInOut = () => {
               <tr key={index} className="hover:bg-gray-50">
                 <td className="px-4 py-2 border">{log.visitor_name}</td>
                 <td className="px-4 py-2 border">{log.visitor_contact_no}</td>
-                <td className="px-4 py-2 border">{log.department_to_visit}</td>
+                <td className="px-4 py-2 border">{log.department_name}</td>
                 <td className="px-4 py-2 border">{log.visit_type}</td>
                 <td className="px-4 py-2 border">
                   {log.check_in_time

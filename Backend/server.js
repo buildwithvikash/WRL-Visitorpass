@@ -5,6 +5,7 @@ dotenv.config();
 import path from "path";
 import { connectToDB, dbConfig1, dbConfig2, dbConfig3 } from "./config/db.js";
 import cookieParser from "cookie-parser";
+const _dirname = path.resolve();
 
 // <------------------------------------------------------------- All API Routes ------------------------------------------------------------->
 import authRoutes from "./routes/auth.route.js";
@@ -33,6 +34,13 @@ app.use("/uploads", express.static(path.resolve("uploads"))); // Static files
 // <------------------------------------------------------------- APIs ------------------------------------------------------------->
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/visitor", visitorRoutes);
+
+// <------------------------------------------------------------- Serve Frontend from Backend ------------------------------------------------------------->
+app.use(express.static(path.join(_dirname, "Frontend", "dist")));
+// Wildcard route to serve index.html ONLY if path does not start with /api
+app.get(/^\/(?!api\/).*/, (_, res) => {
+  res.sendFile(path.join(_dirname, "Frontend", "dist", "index.html"));
+});
 
 // <------------------------------------------------------------- Start server ------------------------------------------------------------->
 const PORT = process.env.PORT;

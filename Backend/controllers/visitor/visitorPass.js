@@ -2,38 +2,22 @@ import sql, { dbConfig3 } from "../../config/db.js";
 import { sendVisitorPassEmail } from "../../config/emailConfig.js";
 
 // Get Departments
-export const fetchDepartments = async (_, res) => {
-  try {
-    const query = `
-        Select * from departments;
-    `;
-
-    const pool = await new sql.ConnectionPool(dbConfig3).connect();
-    const result = await pool.request().query(query);
-    res.json(result.recordset);
-    await pool.close();
-  } catch (error) {
-    console.error("SQL error:", error);
-    res.status(500).json({ success: false, error: error.message });
-  }
-};
-
-// Get Employee by Department
-export const getEmployee = async (req, res) => {
-  const { deptId } = req.query;
-
+export const fetchDepartments = async (req, res) => {
+  const { empId } = req.query;
   try {
     const pool = await new sql.ConnectionPool(dbConfig3).connect();
     const request = pool.request();
 
-    request.input("deptId", sql.Int, deptId);
+    request.input("empId", sql.VarChar(50), empId);
 
     const result = await request.query(`
       SELECT 
-        employee_id AS emp_id,
-        name AS emp_name
-      FROM users 
-      WHERE department_id = @deptId
+        u.name, 
+        dpt.department_name,
+        dpt.deptCode
+      FROM users AS u
+      INNER JOIN departments dpt ON u.department_id = dpt.deptCode
+      WHERE employee_id = @empId
     `);
 
     res.status(200).json({
@@ -43,10 +27,27 @@ export const getEmployee = async (req, res) => {
 
     await pool.close();
   } catch (error) {
-    console.error("Error fetching employee-department list:", error);
+    console.error("SQL error:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Get Employee by Department
+export const getEmployee = async (_, res) => {
+  try {
+    const query = `Select u.name, u.employee_id, dpt.department_name, dpt.deptCode from users as u
+inner join departments  dpt on u.department_id = dpt.deptCode;
+    `;
+
+    const pool = await new sql.ConnectionPool(dbConfig3).connect();
+    const result = await pool.request().query(query);
+    res.json(result.recordset);
+    await pool.close();
+  } catch (error) {
+    console.error("Error fetching employee list:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to retrieve employee and department information",
+      message: "Failed to retrieve employee information",
     });
   }
 };

@@ -33,11 +33,11 @@ export const getVisitorLogs = async (_, res) => {
       .request()
       .input("StartDate", sql.DateTime, istStart)
       .input("EndDate", sql.DateTime, istEnd).query(`
-        SELECT 
+          SELECT 
             vp.pass_id,
             vp.visitor_name,
             vp.visitor_contact_no,
-            vp.department_to_visit,
+            dpt.department_name,
             vp.visit_type,
             vp.allow_on,
             vp.allow_till,
@@ -46,6 +46,7 @@ export const getVisitorLogs = async (_, res) => {
             vl.check_out_time
         FROM visit_logs vl
         LEFT JOIN visitor_passes vp ON vp.pass_id = vl.unique_pass_id
+        inner join departments dpt on dpt.deptCode = vp.department_to_visit
         where check_in_time between @StartDate And @EndDate
         ORDER BY vl.check_in_time DESC
     `);

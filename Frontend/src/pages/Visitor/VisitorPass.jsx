@@ -52,7 +52,7 @@ const VisitorPass = () => {
           label: item.name,
           value: item.employee_id.toString(),
           departmentName: item.department_name,
-          departmentCode: item.department_code,
+          departmentCode: item.deptCode,
         }));
         setEmployees(formatted);
       }
@@ -269,6 +269,8 @@ const VisitorPass = () => {
       setLoading(false);
     }
   };
+  console.log("Submitting data:", visitorData);
+
 
   const handleFetchPreviousData = async () => {
     if (!visitorData.contactNo) {
@@ -620,20 +622,31 @@ const VisitorPass = () => {
                     options={employees}
                     value={visitorData.employeeTo} // Use visitorData state
                     onChange={(e) => {
+                      const selectedValue = e?.target?.value || e?.value || ""; // handle both native and custom select
                       const selectedEmp = employees.find(
-                        (opt) => opt.value === e.target.value
+                        (opt) => opt.value === selectedValue
                       );
 
-                      // Update both selectedEmployees and visitorData
-                      setSelectedEmployees(selectedEmp);
-                      setSelectedDepartment(selectedEmp?.departmentName  || "");
+                      if (selectedEmp) {
+                        setSelectedEmployees(selectedEmp);
+                        setSelectedDepartment(selectedEmp.departmentName);
 
-                      // Update visitorData with selected employee
-                      setVisitorData((prev) => ({
-                        ...prev,
-                        employeeTo: e.target.value,
-                        departmentTo: selectedEmp?.departmentCode  || "",
-                      }));
+                        // ✅ Ensure departmentTo updates correctly
+                        setVisitorData((prev) => ({
+                          ...prev,
+                          employeeTo: selectedEmp.value,
+                          departmentTo: selectedEmp.departmentCode,
+                        }));
+                      } else {
+                        // Reset if user clears the selection
+                        setSelectedEmployees(null);
+                        setSelectedDepartment("");
+                        setVisitorData((prev) => ({
+                          ...prev,
+                          employeeTo: "",
+                          departmentTo: "",
+                        }));
+                      }
                     }}
                     required
                     className="w-full"

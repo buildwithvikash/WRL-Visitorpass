@@ -1,8 +1,6 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import ExcelJS from "exceljs";
-import fs from "fs";
-import path from "path";
 dotenv.config();
 
 // Create transporter with your custom SMTP settings
@@ -157,7 +155,7 @@ export const sendVisitorPassEmail = async ({
   }
 };
 
-// 🟢 Updated: Send Visitor Report Email with Excel attachment
+// ?? Updated: Send Visitor Report Email with Excel attachment
 export const sendVisitorReportEmail = async (visitors) => {
   try {
     if (!Array.isArray(visitors) || visitors.length === 0) {
@@ -210,7 +208,7 @@ export const sendVisitorReportEmail = async (visitors) => {
       cell.alignment = { horizontal: "center" };
     });
 
-    // ✅ Write file to buffer (no temp file needed)
+    // ? Write file to buffer (no temp file needed)
     const buffer = await workbook.xlsx.writeBuffer();
 
     const mailOptions = {
@@ -238,6 +236,75 @@ export const sendVisitorReportEmail = async (visitors) => {
     return true;
   } catch (error) {
     console.error("Error sending visitor report email:", error);
+    return false;
+  }
+};
+
+// ?? Send alert for visitors currently inside the premises
+export const sendCurrentlyInsideVisitorsEmail = async (visitors) => {
+  try {
+    if (!Array.isArray(visitors) || visitors.length === 0) {
+      console.warn("No visitors currently inside.");
+      return false;
+    }
+
+    // Prepare visitor details in HTML table
+    const tableRows = visitors
+      .map(
+        (v, i) => `
+        <tr>
+          <td style="padding:8px; border:1px solid #ddd;">${i + 1}</td>
+          <td style="padding:8px; border:1px solid #ddd;">${v.visitor_name}</td>
+          <td style="padding:8px; border:1px solid #ddd;">${v.contact_no || "-"}</td>
+          <td style="padding:8px; border:1px solid #ddd;">${v.company || "-"}</td>
+          <td style="padding:8px; border:1px solid #ddd;">${v.department_name || "-"}</td>
+          <td style="padding:8px; border:1px solid #ddd;">${v.employee_name || "-"}</td>
+          <td style="padding:8px; border:1px solid #ddd;">${new Date(
+            v.check_in_time
+          ).toLocaleString()}</td>
+        </tr>`
+      )
+      .join("");
+
+    const htmlContent = `
+      <html>
+      <body style="font-family: Arial, sans-serif; background-color:#f8f9fa; padding:20px;">
+        <h2 style="color:#007bff;">Currently Inside Visitors</h2>
+        <p>The following visitors are still inside the premises as of ${new Date().toLocaleString()}:</p>
+        <table style="border-collapse:collapse; width:100%; background:#fff;">
+          <thead style="background:#007bff; color:#fff;">
+            <tr>
+              <th style="padding:8px; border:1px solid #ddd;">#</th>
+              <th style="padding:8px; border:1px solid #ddd;">Name</th>
+              <th style="padding:8px; border:1px solid #ddd;">Contact</th>
+              <th style="padding:8px; border:1px solid #ddd;">Company</th>
+              <th style="padding:8px; border:1px solid #ddd;">Department</th>
+              <th style="padding:8px; border:1px solid #ddd;">Employee To Visit</th>
+              <th style="padding:8px; border:1px solid #ddd;">Check-In Time</th>
+            </tr>
+          </thead>
+          <tbody>${tableRows}</tbody>
+        </table>
+        <p style="margin-top:20px;">Regards,<br><strong>WRL Security Team</strong></p>
+      </body>
+      </html>
+    `;
+
+    const mailOptions = {
+      from: {
+        name: "WRL Visitor Alert",
+        address: process.env.SMTP_USER, // same as used for your visitor pass emails
+      },
+      to: "vikash.kumar@westernequipments.com",
+      subject: "?? Visitors Currently Inside the Premises",
+      html: htmlContent,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Currently inside visitors alert sent:", info.messageId);
+    return true;
+  } catch (error) {
+    console.error("Error sending currently inside visitor alert:", error);
     return false;
   }
 };

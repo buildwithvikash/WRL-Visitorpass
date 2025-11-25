@@ -1,4 +1,5 @@
 import sql, { dbConfig3 } from "../../config/db.js";
+import { sendVisitorPassEmail } from "../../config/emailConfig.js";
 
 export const getVisitorLogs = async (_, res) => {
   try {
@@ -33,22 +34,27 @@ export const getVisitorLogs = async (_, res) => {
       .request()
       .input("StartDate", sql.DateTime, istStart)
       .input("EndDate", sql.DateTime, istEnd).query(`
-          SELECT 
+        SELECT 
             vp.pass_id,
             vp.visitor_name,
             vp.visitor_contact_no,
-            dpt.department_name,
-            vp.visit_type,
+            vp.company,
+            d.department_name,
+            u.name,
+            vp.purpose_of_visit,
             vp.allow_on,
             vp.allow_till,
             vp.vehicle_details,
+            vp.visitor_photo,
             vl.check_in_time,
-            vl.check_out_time
+            vl.check_out_time,
+            vp.created_at
         FROM visit_logs vl
-        LEFT JOIN visitor_passes vp ON vp.pass_id = vl.unique_pass_id
-        inner join departments dpt on dpt.deptCode = vp.department_to_visit
-        where check_in_time between @StartDate And @EndDate
-        ORDER BY vl.check_in_time DESC
+        RIGHT JOIN visitor_passes vp ON vp.pass_id = vl.unique_pass_id
+        INNER JOIN users u ON u.employee_id = vp.employee_to_visit
+        INNER JOIN departments d ON d.deptCode = vp.department_to_visit
+        where vp.created_at between @StartDate And @EndDate
+        ORDER BY vp.created_at DESC
     `);
 
     res.status(200).json({
@@ -103,7 +109,7 @@ export const visitorIn = async (req, res) => {
         BEGIN TRANSACTION;
 
             INSERT INTO visit_logs (unique_pass_id, check_in_time, check_out_time)
-            VALUES (@PassId, GETUTCDATE(), NULL);
+            VALUES (@PassId, SWITCHOFFSET( GETUTCDATE(), '+05:30'), NULL);
 
         UPDATE visitor_passes
         SET status = 100 -- checked in
@@ -119,11 +125,64 @@ export const visitorIn = async (req, res) => {
       });
     }
 
+    // ? Step 3: Fetch visitor + employee details for email
+    const infoQuery = `
+      SELECT 
+        vp.visitor_photo,
+        vp.pass_id,
+        vp.visitor_name,
+        vp.visitor_contact_no,
+        vp.visitor_email,
+        vp.allow_on,
+        vp.allow_till,
+        vp.department_to_visit,
+        vp.employee_to_visit,
+        d.department_name,
+        u.name AS employee_name,
+        u.employee_email,
+        u.manager_email,
+        v.company,
+        v.city,
+        vp.purpose_of_visit
+      FROM visitor_passes vp
+      INNER JOIN visitors v ON v.visitor_id = vp.visitor_id
+      LEFT JOIN departments d ON vp.department_to_visit = d.deptCode
+      LEFT JOIN users u ON vp.employee_to_visit = u.employee_id
+      WHERE vp.pass_id = @PassId
+    `;
+
+    const infoResult = await pool
+      .request()
+      .input("PassId", sql.VarChar(50), passId)
+      .query(infoQuery);
+
+    const data = infoResult.recordset[0];
+
+    if (data) {
+      // ? Step 4: Send check-in notification email
+      await sendVisitorPassEmail({
+        to: data.employee_email,
+        cc: [data.manager_email, process.env.CC_HR, process.env.CC_PH],
+        photoPath: data.visitor_photo, // You can fetch actual photo if required
+        visitorName: data.visitor_name,
+        visitorContact: data.visitor_contact_no,
+        visitorEmail: data.visitor_email,
+        company: data.company,
+        city: data.city,
+        visitorId: data.pass_id,
+        allowOn: data.allow_on,
+        allowTill: data.allow_till,
+        departmentToVisit: data.department_name,
+        employeeToVisit: data.employee_name,
+        purposeOfVisit: data.purpose_of_visit,
+      });
+    }
+
     await pool.close();
 
     res.status(201).json({
       success: true,
-      message: "Visitor checked in successfully",
+      message: "Visitor checked in successfully and email sent",
       data: { passId },
     });
   } catch (error) {
@@ -169,7 +228,7 @@ export const visitorOut = async (req, res) => {
       BEGIN TRANSACTION;
 
       UPDATE visit_logs
-      SET check_out_time = GETUTCDATE()
+      SET check_out_time = SWITCHOFFSET( GETUTCDATE(), '+05:30')
       WHERE unique_pass_id = @PassId AND check_out_time IS NULL;
 
       UPDATE visitor_passes

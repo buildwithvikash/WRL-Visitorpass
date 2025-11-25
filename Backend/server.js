@@ -5,6 +5,7 @@ dotenv.config();
 import path from "path";
 import { connectToDB, dbConfig1, dbConfig2, dbConfig3 } from "./config/db.js";
 import cookieParser from "cookie-parser";
+
 const _dirname = path.resolve();
 
 // <------------------------------------------------------------- All API Routes ------------------------------------------------------------->
@@ -12,6 +13,7 @@ import authRoutes from "./routes/auth.route.js";
 import visitorRoutes from "./routes/visitor.route.js";
 
 const app = express();
+
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -28,7 +30,9 @@ app.use("/uploads", express.static(path.resolve("uploads"))); // Static files
     global.pool1 = await connectToDB(dbConfig1);
     global.pool2 = await connectToDB(dbConfig2);
     global.pool3 = await connectToDB(dbConfig3);
-  } catch (error) {}
+  } catch (error) {
+    console.error("Database connection error:", error);
+  }
 })();
 
 // <------------------------------------------------------------- APIs ------------------------------------------------------------->
@@ -45,5 +49,5 @@ app.get(/^\/(?!api\/).*/, (_, res) => {
 // <------------------------------------------------------------- Start server ------------------------------------------------------------->
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port:${PORT}`);
+  console.log(`?? Server running on port:${PORT}`);
 });

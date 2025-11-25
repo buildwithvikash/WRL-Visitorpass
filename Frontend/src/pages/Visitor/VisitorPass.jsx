@@ -74,10 +74,10 @@ const VisitorPass = () => {
 
   const startCamera = async () => {
     try {
-      // 🟢 Step 1: Request permission once so that Edge can list cameras
+      // ?? Step 1: Request permission once so that Edge can list cameras
       await navigator.mediaDevices.getUserMedia({ video: true });
 
-      // 🟢 Step 2: Now get all available devices
+      // ?? Step 2: Now get all available devices
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter((d) => d.kind === "videoinput");
 
@@ -86,10 +86,10 @@ const VisitorPass = () => {
         return;
       }
 
-      // 🟢 Step 3: Choose the last camera (often external)
+      // ?? Step 3: Choose the last camera (often external)
       const selectedDeviceId = videoDevices[videoDevices.length - 1].deviceId;
 
-      // 🟢 Step 4: Start camera using the chosen device
+      // ?? Step 4: Start camera using the chosen device
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           deviceId: selectedDeviceId ? { ideal: selectedDeviceId } : undefined,
@@ -97,7 +97,7 @@ const VisitorPass = () => {
         audio: false,
       });
 
-      // 🟢 Step 5: Assign stream to the <video> element
+      // ?? Step 5: Assign stream to the <video> element
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
 
@@ -233,7 +233,6 @@ const VisitorPass = () => {
     const requiredFields = [
       "name",
       "contactNo",
-      "email",
       "identityType",
       "identityNo",
       "allowOn",
@@ -388,6 +387,7 @@ const VisitorPass = () => {
                   value={visitorData.company}
                   onChange={handleInputChange}
                   className="w-full"
+                  required={false}
                 />
               </div>
               <div className="w-full">
@@ -532,27 +532,11 @@ const VisitorPass = () => {
                   />
                 </div>
                 <div className="w-full">
-                  <SelectField
+                  <InputField
                     label="City"
+                    type="text"
                     name="city"
-                    options={[
-                      { value: "", label: "Select City" },
-                      { value: "mumbai", label: "Mumbai" },
-                      { value: "delhi", label: "Delhi" },
-                      { value: "bengaluru", label: "Bengaluru" },
-                      { value: "hyderabad", label: "Hyderabad" },
-                      { value: "ahmedabad", label: "Ahmedabad" },
-                      { value: "chennai", label: "Chennai" },
-                      { value: "kolkata", label: "Kolkata" },
-                      { value: "pune", label: "Pune" },
-                      { value: "jaipur", label: "Jaipur" },
-                      { value: "lucknow", label: "Lucknow" },
-                      { value: "bhopal", label: "Bhopal" },
-                      { value: "patna", label: "Patna" },
-                      { value: "kochi", label: "Kochi" },
-                      { value: "chandigarh", label: "Chandigarh" },
-                      { value: "visakhapatnam", label: "Visakhapatnam" },
-                    ]}
+                    placeholder="Enter the city name"
                     value={visitorData.city}
                     onChange={handleInputChange}
                     className="w-full"
@@ -629,7 +613,7 @@ const VisitorPass = () => {
                         setSelectedEmployees(selectedEmp);
                         setSelectedDepartment(selectedEmp.departmentName);
 
-                        // ✅ Ensure departmentTo updates correctly
+                        // ? Ensure departmentTo updates correctly
                         setVisitorData((prev) => ({
                           ...prev,
                           employeeTo: selectedEmp.value,
@@ -680,10 +664,10 @@ const VisitorPass = () => {
                 </div>
                 <div className="w-full">
                   <InputField
-                    label="Remark"
+                    label="Token No."
                     type="text"
                     name="remark"
-                    placeholder="Enter the remark"
+                    placeholder="Enter token no."
                     value={visitorData.remark}
                     onChange={handleInputChange}
                     className="w-full"

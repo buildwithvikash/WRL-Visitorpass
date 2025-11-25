@@ -80,7 +80,7 @@ export const generateVisitorPass = async (req, res) => {
     createdBy,
   } = req.body;
 
-  if (!name || !contactNo || !email) {
+  if (!name || !contactNo) {
     return res.status(400).json({
       success: false,
       message: "Name, Contact No, and Email are required",
@@ -224,54 +224,7 @@ export const generateVisitorPass = async (req, res) => {
       )
     `);
 
-    // Send notification email (optional, same as before) — your template query can stay the same
-
-    const templateData = await pool
-      .request()
-      .input("employeeTo", sql.VarChar(100), employeeTo).query(`
-        SELECT TOP 1
-          v.visitor_id,
-          v.company,
-          v.city,
-          d.department_name,
-          u.name AS employee_name,
-          u.employee_email,
-          u.manager_email
-        FROM visitors v
-        INNER JOIN visitor_passes vp ON v.visitor_id = vp.visitor_id
-        INNER JOIN users u ON u.employee_id = vp.employee_to_visit
-        INNER JOIN departments d ON d.deptCode = vp.department_to_visit
-        WHERE u.employee_id = @employeeTo
-        ORDER BY vp.created_at DESC;
-      `);
-
-    // Get the first row of the result
-    const data = templateData?.recordset[0];
-
-    if (!data) {
-      console.warn("No data found for email template.");
-      return;
-    }
-
-    // Send the visitor pass email
-    await sendVisitorPassEmail({
-      to: data.employee_email,
-      cc: [data.manager_email, process.env.CC_HR, process.env.CC_PH],
-      photoPath,
-      visitorName: name,
-      visitorContact: contactNo,
-      visitorEmail: email,
-      company,
-      city,
-      visitorId: data.visitor_id,
-      allowOn,
-      allowTill,
-      departmentToVisit: data.department_name,
-      employeeToVisit: data.employee_name,
-      purposeOfVisit,
-    });
-
-    await pool.close();
+     await pool.close();
 
     res.status(201).json({
       success: true,

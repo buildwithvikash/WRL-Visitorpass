@@ -41,6 +41,11 @@ const MENU_CONFIG = [
         label: "Reports",
         roles: ["admin", "security", "hr"],
       },
+      {
+        path: "/visitor/history",
+        label: "Visitor History",
+        roles: ["admin", "security", "hr"],
+      },
     ],
   },
 ];
@@ -130,7 +135,7 @@ const Sidebar = ({ isSidebarExpanded, toggleSidebar }) => {
         isSidebarExpanded ? "w-64" : "w-16"
       } p-4 shadow-xl flex flex-col`}
     >
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         {/* Title */}
         <div className="flex justify-between mb-4">
           {isSidebarExpanded ? (

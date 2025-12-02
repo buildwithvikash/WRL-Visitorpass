@@ -74,10 +74,10 @@ const VisitorPass = () => {
 
   const startCamera = async () => {
     try {
-      // ?? Step 1: Request permission once so that Edge can list cameras
+      // 🟢 Step 1: Request permission once so that Edge can list cameras
       await navigator.mediaDevices.getUserMedia({ video: true });
 
-      // ?? Step 2: Now get all available devices
+      // 🟢 Step 2: Now get all available devices
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter((d) => d.kind === "videoinput");
 
@@ -86,10 +86,10 @@ const VisitorPass = () => {
         return;
       }
 
-      // ?? Step 3: Choose the last camera (often external)
+      // 🟢 Step 3: Choose the last camera (often external)
       const selectedDeviceId = videoDevices[videoDevices.length - 1].deviceId;
 
-      // ?? Step 4: Start camera using the chosen device
+      // 🟢 Step 4: Start camera using the chosen device
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           deviceId: selectedDeviceId ? { ideal: selectedDeviceId } : undefined,
@@ -97,7 +97,7 @@ const VisitorPass = () => {
         audio: false,
       });
 
-      // ?? Step 5: Assign stream to the <video> element
+      // 🟢 Step 5: Assign stream to the <video> element
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
 
@@ -613,7 +613,7 @@ const VisitorPass = () => {
                         setSelectedEmployees(selectedEmp);
                         setSelectedDepartment(selectedEmp.departmentName);
 
-                        // ? Ensure departmentTo updates correctly
+                        // ✅ Ensure departmentTo updates correctly
                         setVisitorData((prev) => ({
                           ...prev,
                           employeeTo: selectedEmp.value,

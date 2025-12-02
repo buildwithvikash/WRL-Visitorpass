@@ -1,16 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import {
-  FaIndustry,
-  FaClipboardCheck,
-  FaTruckMoving,
-  FaChevronDown,
-  FaChevronUp,
-  FaBars,
-  FaTimes,
-  FaClipboardList,
-} from "react-icons/fa";
-import { MdOutlineDisplaySettings } from "react-icons/md";
+import { FaChevronDown, FaChevronUp, FaBars, FaTimes } from "react-icons/fa";
 import { FaUserShield } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 
@@ -28,12 +18,12 @@ const MENU_CONFIG = [
       },
       {
         path: "/visitor/generate-pass",
-        label: "Visitor Pass",
+        label: "Generate Pass",
         roles: ["admin", "security", "hr"],
       },
       {
         path: "/visitor/in-out",
-        label: "Visitor In Out",
+        label: "In / Out",
         roles: ["admin", "security", "hr"],
       },
       {
@@ -43,9 +33,9 @@ const MENU_CONFIG = [
       },
       {
         path: "/visitor/history",
-        label: "Visitor History",
+        label: "History",
         roles: ["admin", "security", "hr"],
-      },
+      }
     ],
   },
 ];

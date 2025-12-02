@@ -15,7 +15,7 @@ const VisitorInOut = lazy(() => import("./pages/Visitor/VisitorInOut"));
 const VisitorPassDisplay = lazy(() =>
   import("./pages/Visitor/VisitorPassDisplay")
 );
-const VisitorHistory = lazy(() => import("./pages/Visitor/AllVisitors"));
+const VisitorHistory = lazy(() => import("./pages/Visitor/VisitorHistory"));
 
 const NotFound = lazy(() => import("./pages/NotFound"));
 

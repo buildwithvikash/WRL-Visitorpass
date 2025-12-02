@@ -125,7 +125,7 @@ export const visitorIn = async (req, res) => {
       });
     }
 
-    // ? Step 3: Fetch visitor + employee details for email
+    // ✅ Step 3: Fetch visitor + employee details for email
     const infoQuery = `
       SELECT 
         vp.visitor_photo,
@@ -142,8 +142,7 @@ export const visitorIn = async (req, res) => {
         u.employee_email,
         u.manager_email,
         v.company,
-        v.city,
-        vp.purpose_of_visit
+        v.city
       FROM visitor_passes vp
       INNER JOIN visitors v ON v.visitor_id = vp.visitor_id
       LEFT JOIN departments d ON vp.department_to_visit = d.deptCode
@@ -159,7 +158,7 @@ export const visitorIn = async (req, res) => {
     const data = infoResult.recordset[0];
 
     if (data) {
-      // ? Step 4: Send check-in notification email
+      // ✅ Step 4: Send check-in notification email
       await sendVisitorPassEmail({
         to: data.employee_email,
         cc: [data.manager_email, process.env.CC_HR, process.env.CC_PH],
@@ -174,7 +173,7 @@ export const visitorIn = async (req, res) => {
         allowTill: data.allow_till,
         departmentToVisit: data.department_name,
         employeeToVisit: data.employee_name,
-        purposeOfVisit: data.purpose_of_visit,
+        purposeOfVisit: data.purposeOfVisit,
       });
     }
 

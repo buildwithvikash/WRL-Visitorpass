@@ -17,10 +17,9 @@ import {
 } from "../controllers/visitor/reports.js";
 import { visitors } from "../controllers/visitor/visitors.js";
 import { getDashboardStats } from "../controllers/visitor/dashboard.js";
-import { notifyCurrentlyInsideVisitors } from "../controllers/visitor/currentlyInside.js";
-import { 
-  getAllVisitorsHistory,
-  getVisitorFullHistory
+import {
+  getAllVisitors,
+  getVisitorDetails,
 } from "../controllers/visitor/visitorHistoryController.js";
 
 const router = express.Router();
@@ -37,7 +36,6 @@ router.post("/in", visitorIn);
 router.post("/out", visitorOut);
 router.get("/logs", getVisitorLogs);
 router.get("/reprint/:passId", getVisitorPassDetails);
-router.post("/notify-currently-inside", notifyCurrentlyInsideVisitors);
 
 // -----------------> Visitor Reports Routes
 router.get("/repot", fetchVisitors);
@@ -46,7 +44,7 @@ router.get("/visitors", visitors);
 // -----------------> Visitor Dashboard Routes
 router.get("/dashboard-stats", getDashboardStats);
 // -----------------> Visitor History Routes
-router.get("/history", getAllVisitorsHistory);
-router.get("/details/:visitorId", getVisitorFullHistory);
+router.get("/history", getAllVisitors);
+router.get("/details/:visitorId", getVisitorDetails);
 
 export default router;

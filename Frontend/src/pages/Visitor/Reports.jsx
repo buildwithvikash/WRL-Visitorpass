@@ -124,7 +124,7 @@ const Reports = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-100 p-4 overflow-x-hidden max-w-full">
       <Title title="Visitors Reports" align="center" />
 
       {/* Filters & Quick Actions */}

@@ -21,7 +21,7 @@ import toast from "react-hot-toast";
 import { baseURL } from "../../assets/assets";
 import { useNavigate } from "react-router-dom";
 
-const VisitorInOut = () => {
+const InOut = () => {
   const [loading, setLoading] = useState(false);
   const [visitorLogs, setVisitorLogs] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -162,7 +162,7 @@ const VisitorInOut = () => {
   const currentlyOut = filteredVisitors.filter((v) => v.check_out_time).length;
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-4 md:px-8 relative">
+    <div className="min-h-screen bg-gray-100 p-4 overflow-x-hidden max-w-full relative">
       <Title title="Manage Visitor" align="center" />
 
       {/* Search Bar */}
@@ -337,7 +337,9 @@ const VisitorInOut = () => {
                           <span className="font-medium">Check Out:</span>
                           <span>
                             {visitor.check_out_time
-                              ? visitor.check_out_time.replace("T"," ").replace("Z","")
+                              ? visitor.check_out_time
+                                  .replace("T", " ")
+                                  .replace("Z", "")
                               : "N/A"}
                           </span>
                         </div>
@@ -453,4 +455,4 @@ const VisitorInOut = () => {
   );
 };
 
-export default VisitorInOut;
+export default InOut;

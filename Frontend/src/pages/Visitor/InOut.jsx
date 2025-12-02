@@ -297,13 +297,24 @@ const InOut = () => {
                       {visitor.visitor_photo ? (
                         <img
                           src={visitor.visitor_photo}
-                          alt="Visitor"
-                          className="w-24 h-24 object-cover rounded-full border-4 border-blue-300 shadow-md"
+                          alt={`${visitor.visitor_name || "Visitor"}'s photo`}
+                          className="w-24 h-24 object-cover rounded-full border-4 border-blue-300 shadow-md hover:scale-105 transition-transform"
                         />
                       ) : (
                         <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-full border-4 border-gray-300 text-gray-400 shadow-md">
                           <CgProfile className="text-5xl" />
                         </div>
+                      )}
+
+                      {isCurrentlyIn && (
+                        <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                          Currently In
+                        </span>
+                      )}
+                      {atSecurityGate && (
+                        <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                          At Security Gate
+                        </span>
                       )}
                     </div>
 
@@ -394,28 +405,35 @@ const InOut = () => {
                         )}
 
                         {isCurrentlyIn && (
-                          <Button
-                            onClick={() =>
-                              handleVisitorActionForCard("out", visitor.pass_id)
-                            }
-                            bgColor="bg-red-600"
-                            textColor="text-white"
-                            className="px-4 py-2 rounded-md flex items-center gap-2"
-                          >
-                            <FaSignOutAlt /> Out
-                          </Button>
-                        )}
+                          <>
+                            <Button
+                              onClick={() =>
+                                handleVisitorActionForCard(
+                                  "out",
+                                  visitor.pass_id
+                                )
+                              }
+                              bgColor="bg-red-600"
+                              textColor="text-white"
+                              className="px-4 py-2 rounded-md flex items-center gap-2"
+                            >
+                              <FaSignOutAlt /> Out
+                            </Button>
 
-                        <Button
-                          onClick={() =>
-                            navigate(`/visitor-pass-display/${visitor.pass_id}`)
-                          }
-                          bgColor="bg-yellow-500"
-                          textColor="text-white"
-                          className="px-4 py-2 rounded-md flex items-center gap-2"
-                        >
-                          🖨️ Reprint Pass
-                        </Button>
+                            <Button
+                              onClick={() =>
+                                navigate(
+                                  `/visitor-pass-display/${visitor.pass_id}`
+                                )
+                              }
+                              bgColor="bg-yellow-500"
+                              textColor="text-white"
+                              className="px-4 py-2 rounded-md flex items-center gap-2"
+                            >
+                              🖨️ Reprint Pass
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>

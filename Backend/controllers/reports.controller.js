@@ -1,5 +1,5 @@
-import sql, { dbConfig3 } from "../config/db.js";
-import { sendVisitorReportEmail } from "../config/emailConfig.js";
+import sql, { dbConfig3 } from "../../config/db.js";
+import { sendVisitorReportEmail } from "../../config/emailConfig.js";
 
 // Visitor
 export const fetchVisitors = async (req, res) => {
@@ -23,6 +23,7 @@ export const fetchVisitors = async (req, res) => {
     const query = `
       SELECT 
         v.visitor_id As id,
+        vp.visit_type,
         v.name As visitor_name,
         v.contact_no,
         v.email,
@@ -36,9 +37,9 @@ export const fetchVisitors = async (req, res) => {
         d.department_name,
         u.name As employee_name,
         vp.purpose_of_visit,
-        vp.token,
         vl.check_in_time,
-        vl.check_out_time
+        vl.check_out_time,
+        vp.token
       FROM visitors v
       INNER JOIN visitor_passes vp ON v.visitor_id = vp.visitor_id
       INNER JOIN visit_logs vl ON vl.unique_pass_id = vp.pass_id

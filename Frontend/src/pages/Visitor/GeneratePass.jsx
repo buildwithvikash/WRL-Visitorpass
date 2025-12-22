@@ -669,8 +669,10 @@ const GeneratePass = () => {
                     name="visitType"
                     options={[
                       { value: "", label: "Select Visit Type" },
-                      { value: "business", label: "Business" },
-                      { value: "tourism", label: "Tourism" },
+                      { value: "customer", label: "Customer" },
+                      { value: "supplier", label: "Supplier" },
+                      { value: "employee", label: "Employee" },
+                      { value: "contractor", label: "Contractor" },
                       { value: "other", label: "Other" },
                     ]}
                     value={visitorData.visitType}

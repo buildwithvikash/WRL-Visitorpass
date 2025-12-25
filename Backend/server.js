@@ -9,8 +9,7 @@ import cookieParser from "cookie-parser";
 const _dirname = path.resolve();
 
 // <------------------------------------------------------------- All API Routes ------------------------------------------------------------->
-import authRoutes from "./routes/auth.route.js";
-import visitorRoutes from "./routes/visitor.route.js";
+import routes from "./routes/index.js";
 
 const app = express();
 
@@ -36,8 +35,7 @@ app.use("/uploads", express.static(path.resolve("uploads"))); // Static files
 })();
 
 // <------------------------------------------------------------- APIs ------------------------------------------------------------->
-app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/visitor", visitorRoutes);
+app.use("/api/v1/",routes);
 
 // <------------------------------------------------------------- Serve Frontend from Backend ------------------------------------------------------------->
 app.use(express.static(path.join(_dirname, "Frontend", "dist")));
